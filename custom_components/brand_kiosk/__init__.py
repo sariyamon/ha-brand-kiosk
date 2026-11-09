@@ -103,7 +103,10 @@ def build_config(
     return {
         "title": opts.get(CONF_TITLE) or DEFAULT_TITLE,
         "colors": colors,
-        "browser_title": bool(opts.get(CONF_BROWSER_TITLE, True)),
+        # Nothing to replace when the title still says "Home Assistant" (and older
+        # scripts could loop on it), so the tab title is left alone then.
+        "browser_title": bool(opts.get(CONF_BROWSER_TITLE, True))
+        and "Home Assistant" not in (opts.get(CONF_TITLE) or DEFAULT_TITLE),
         "hide_items": []
         if is_admin and not opts.get(CONF_HIDE_FOR_ADMINS)
         else list(opts.get(CONF_HIDE_ITEMS, [])),

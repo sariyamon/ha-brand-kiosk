@@ -9,7 +9,7 @@
  * In any browser tab:  ?kiosk=off  turns kiosk mode off for that tab,
  *                      ?kiosk      turns it on (top bar and sidebar hidden).
  */
-const VERSION = "1.1.0";
+const VERSION = "1.1.1";
 const TAG = "brand-kiosk";
 const SESSION_KEY = "brand_kiosk_override";
 
@@ -118,9 +118,18 @@ function applyBranding(n) {
 }
 
 let titleObserver = null;
+// Last title we wrote. Writing document.title fires the observer again, so the
+// guard must stop that echo; otherwise a title that still contains "Home Assistant"
+// (e.g. the default) loops forever and freezes the page.
+let appliedTitle = null;
 function fixTitle() {
-  if (settings && settings.browser_title && document.title.includes("Home Assistant"))
-    document.title = document.title.replace(/Home Assistant/g, settings.title);
+  if (!settings || !settings.browser_title) return;
+  const current = document.title;
+  if (current === appliedTitle || !current.includes("Home Assistant")) return;
+  if (settings.title.includes("Home Assistant")) return; // nothing to change
+  const next = current.replace(/Home Assistant/g, settings.title);
+  appliedTitle = next;
+  if (next !== current) document.title = next;
 }
 function applyBrowserTitle() {
   fixTitle();
