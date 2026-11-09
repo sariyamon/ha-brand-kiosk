@@ -11,6 +11,7 @@ import voluptuous as vol
 from homeassistant.components import frontend, websocket_api
 from homeassistant.components.http import StaticPathConfig
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.dispatcher import async_dispatcher_connect, async_dispatcher_send
@@ -29,6 +30,7 @@ from .const import (
     CONF_HIDE_ITEMS,
     CONF_HIDE_SIDEBAR,
     CONF_KIOSK,
+    CONF_KIOSK_MASTER,
     CONF_LOCK,
     CONF_LOGO,
     CONF_LOGO_APP_ICON,
@@ -51,6 +53,8 @@ _LOGGER = logging.getLogger(__name__)
 
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 JS_FILE = Path(__file__).parent / "frontend" / "brand-kiosk.js"
+PLATFORMS = [Platform.SWITCH]
+_RULE_USERS = "rule_users"
 
 _ORIGINAL_MANIFEST = "original_manifest"
 
@@ -85,6 +89,8 @@ def build_config(
         ),
         None,
     )
+    if not opts.get(CONF_KIOSK_MASTER, True):
+        rule = None
     kiosk = None
     if rule:
         kiosk = {
@@ -135,8 +141,9 @@ def _manifest_version() -> str:
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Apply the branding and tell open browsers."""
-    hass.data.setdefault(DOMAIN, {})
+    hass.data.setdefault(DOMAIN, {})[_RULE_USERS] = _rule_users(entry)
     _apply_app_manifest(hass, entry)
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(_async_updated))
     async_dispatcher_send(hass, SIGNAL_UPDATED)
     return True
@@ -144,6 +151,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Put Home Assistant's own name and icons back."""
+    if not await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
+        return False
     original = hass.data.get(DOMAIN, {}).pop(_ORIGINAL_MANIFEST, None)
     if original:
         for key, val in original.items():
@@ -160,7 +169,15 @@ async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
         await hass.async_add_executor_job(lambda: path.unlink(missing_ok=True))
 
 
+def _rule_users(entry: ConfigEntry) -> list[str]:
+    return sorted(r[CONF_USER_ID] for r in entry.options.get(CONF_KIOSK, []))
+
+
 async def _async_updated(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    if _rule_users(entry) != hass.data.get(DOMAIN, {}).get(_RULE_USERS):
+        # A kiosk user was added or deleted: reload so its switch appears or goes.
+        await hass.config_entries.async_reload(entry.entry_id)
+        return
     _apply_app_manifest(hass, entry)
     async_dispatcher_send(hass, SIGNAL_UPDATED)
 

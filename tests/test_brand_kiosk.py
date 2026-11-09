@@ -90,14 +90,37 @@ async def test_kiosk_rule_per_user(hass: HomeAssistant, hass_admin_user, hass_re
     assert kiosk == {"dashboard": "wall-panel", "view": "cams", "hide_header": True, "hide_sidebar": True, "lock": True}
     assert build_config(hass, hass_admin_user.id)["kiosk"] is None
 
-    # Turning it off removes the rule.
+    # A switch per kiosk user, plus the master switch.
+    user_switch = f"switch.brand_kiosk_kiosk_{hass_read_only_user.name.lower().replace(' ', '_')}"
+    assert hass.states.get("switch.brand_kiosk_kiosk_mode").state == "on"
+    assert hass.states.get(user_switch).state == "on"
+
+    # Per-user switch off: kiosk off, settings kept.
+    await hass.services.async_call("switch", "turn_off", {"entity_id": user_switch}, blocking=True)
+    await hass.async_block_till_done()
+    assert build_config(hass, wall)["kiosk"] is None
+    assert hass.states.get(user_switch).state == "off"
+    await hass.services.async_call("switch", "turn_on", {"entity_id": user_switch}, blocking=True)
+    await hass.async_block_till_done()
+    assert build_config(hass, wall)["kiosk"]["dashboard"] == "wall-panel"
+
+    # Master switch off pauses everyone.
+    await hass.services.async_call("switch", "turn_off", {"entity_id": "switch.brand_kiosk_kiosk_mode"}, blocking=True)
+    await hass.async_block_till_done()
+    assert build_config(hass, wall)["kiosk"] is None
+    await hass.services.async_call("switch", "turn_on", {"entity_id": "switch.brand_kiosk_kiosk_mode"}, blocking=True)
+    await hass.async_block_till_done()
+    assert build_config(hass, wall)["kiosk"] is not None
+
+    # Delete removes the rule and its switch.
     await _options(
         hass,
         entry_id,
-        ("kiosk_user", {"kiosk_user": {"user_id": wall}, "kiosk": {"enabled": False, "dashboard": "wall-panel", "hide_header": True, "hide_sidebar": True, "lock": True}}),
+        ("kiosk_user", {"kiosk_user": {"user_id": wall}, "kiosk": {"enabled": True, "dashboard": "wall-panel", "hide_header": True, "hide_sidebar": True, "lock": True, "remove": True}}),
         ("save", None),
     )
     assert build_config(hass, wall)["kiosk"] is None
+    assert hass.states.get(user_switch) is None
 
 
 async def test_hidden_items_skip_admins(hass: HomeAssistant) -> None:

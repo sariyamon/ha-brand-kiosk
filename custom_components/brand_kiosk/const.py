@@ -33,6 +33,8 @@ CONF_VIEW = "view"
 CONF_HIDE_HEADER = "hide_header"
 CONF_HIDE_SIDEBAR = "hide_sidebar"
 CONF_LOCK = "lock"
+CONF_REMOVE = "remove"            # form field only
+CONF_KIOSK_MASTER = "kiosk_master"  # master on/off for all kiosk users
 
 DEFAULT_TITLE = "Home Assistant"
 DEFAULT_COLOR = [3, 169, 244]

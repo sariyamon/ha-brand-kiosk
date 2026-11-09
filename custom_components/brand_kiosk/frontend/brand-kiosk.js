@@ -9,7 +9,7 @@
  * In any browser tab:  ?kiosk=off  turns kiosk mode off for that tab,
  *                      ?kiosk      turns it on (top bar and sidebar hidden).
  */
-const VERSION = "1.0.0";
+const VERSION = "1.1.0";
 const TAG = "brand-kiosk";
 const SESSION_KEY = "brand_kiosk_override";
 

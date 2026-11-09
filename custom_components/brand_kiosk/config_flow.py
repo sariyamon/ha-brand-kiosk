@@ -30,7 +30,9 @@ from .const import (
     CONF_HIDE_ITEMS,
     CONF_HIDE_SIDEBAR,
     CONF_KIOSK,
+    CONF_KIOSK_MASTER,
     CONF_LOCK,
+    CONF_REMOVE,
     CONF_LOGO,
     CONF_LOGO_APP_ICON,
     CONF_LOGO_FAVICON,
@@ -173,13 +175,18 @@ class BrandKioskOptionsFlow(OptionsFlow):
         )
 
     async def _kiosk_summary(self) -> str:
-        rules = [r for r in self.opts[CONF_KIOSK] if r.get(CONF_ENABLED, True)]
+        rules = self.opts[CONF_KIOSK]
         if not rules:
             return "No kiosk users yet."
         names = {o["value"]: o["label"] for o in await _users(self.hass)}
-        return "Kiosk users: " + ", ".join(
-            f"{names.get(r[CONF_USER_ID], 'removed user')} → /{r.get(CONF_DASHBOARD, 'lovelace')}" for r in rules
+        text = "Kiosk users: " + ", ".join(
+            f"{names.get(r[CONF_USER_ID], 'removed user')} → /{r.get(CONF_DASHBOARD, 'lovelace')}"
+            f"{'' if r.get(CONF_ENABLED, True) else ' (off)'}"
+            for r in rules
         )
+        if not self.opts.get(CONF_KIOSK_MASTER, True):
+            text += "\n\nThe **Kiosk mode** switch is off, so kiosk mode is paused for everyone."
+        return text
 
     async def async_step_branding(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         if user_input is not None:
@@ -232,7 +239,7 @@ class BrandKioskOptionsFlow(OptionsFlow):
         rule = next((r for r in rules if r[CONF_USER_ID] == self._user_id), None)
         if user_input is not None:
             rules[:] = [r for r in rules if r[CONF_USER_ID] != self._user_id]
-            if user_input[CONF_ENABLED]:
+            if not user_input.pop(CONF_REMOVE, False):
                 rules.append({CONF_USER_ID: self._user_id, **user_input})
             return await self.async_step_init()
         r = rule or {}
@@ -249,6 +256,7 @@ class BrandKioskOptionsFlow(OptionsFlow):
                     vol.Required(CONF_HIDE_HEADER, default=r.get(CONF_HIDE_HEADER, True)): selector.BooleanSelector(),
                     vol.Required(CONF_HIDE_SIDEBAR, default=r.get(CONF_HIDE_SIDEBAR, True)): selector.BooleanSelector(),
                     vol.Required(CONF_LOCK, default=r.get(CONF_LOCK, True)): selector.BooleanSelector(),
+                    **({vol.Required(CONF_REMOVE, default=False): selector.BooleanSelector()} if rule else {}),
                 }
             ),
             description_placeholders={"user": user.name if user else "this user"},
