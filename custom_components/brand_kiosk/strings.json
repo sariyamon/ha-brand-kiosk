@@ -78,7 +78,7 @@
       },
       "kiosk_user": {
         "title": "Kiosk mode for a user",
-        "description": "Pick the user. Each user can have their own dashboard. Tip: create a separate user for a wall tablet.\n\nTurn kiosk mode on or off any time with the **Kiosk mode** switch (all kiosk users) or the **Kiosk <user>** switch for one user.",
+        "description": "Pick the user. Each user can have their own dashboard. Tip: create a separate user for a wall tablet.\n\nTurn kiosk mode on or off any time with the **Kiosk mode** switch (all kiosk users) or the **Kiosk + user name** switch for one user.",
         "data": {
           "user_id": "User"
         }
@@ -96,7 +96,7 @@
           "remove": "Delete kiosk mode for this user"
         },
         "data_description": {
-          "enabled": "Turn it on or off here, or with the switch \"Kiosk <user>\" from a dashboard or automation. The settings below are kept while it is off.",
+          "enabled": "Turn it on or off here, or with the switch \"Kiosk + user name\" from a dashboard or automation. The settings below are kept while it is off.",
           "view": "Path of one view, e.g. \"cameras\". Leave empty for the dashboard's first view.",
           "lock": "If they open any other page, they are sent back to this dashboard.",
           "remove": "Removes this user's kiosk set-up and its switch."
