@@ -29,4 +29,9 @@ jobs:
         with:
           python-version: "3.13"
       - run: pip install pytest-homeassistant-custom-component
+      # The integration depends on Home Assistant's frontend; install the exact
+      # frontend build that this Home Assistant version expects.
+      - run: |
+          REQ=$(python -c "import json, homeassistant.components.frontend as f, pathlib; print(json.loads((pathlib.Path(f.__file__).parent / 'manifest.json').read_text())['requirements'][0])")
+          pip install "$REQ"
       - run: pytest -q
