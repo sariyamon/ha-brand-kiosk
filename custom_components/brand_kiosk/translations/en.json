@@ -1,0 +1,120 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Brand & Kiosk",
+        "description": "Choose the title, colours and logo shown in Home Assistant. Kiosk mode for users is set up afterwards under Configure.",
+        "data": {
+          "title": "Title",
+          "color": "Title colour",
+          "gradient": "Use a two-colour gradient",
+          "color2": "Second gradient colour",
+          "browser_title": "Use the title in the browser tab too",
+          "logo_upload": "Logo image",
+          "logo_sidebar": "Show the logo next to the sidebar title",
+          "logo_favicon": "Use the logo as the browser tab icon",
+          "logo_app_icon": "Use the logo as the home-screen app icon"
+        },
+        "data_description": {
+          "title": "Replaces \"Home Assistant\" at the top of the sidebar.",
+          "gradient": "Blend from the title colour into the second colour.",
+          "browser_title": "Shows your title instead of \"Home Assistant\" in the browser tab and window.",
+          "logo_upload": "PNG, SVG, JPG, WebP or ICO. A square image of at least 512 × 512 works best.",
+          "logo_app_icon": "Used when Home Assistant is added to a phone or tablet home screen. Re-add the shortcut to see a new icon."
+        }
+      }
+    },
+    "error": {
+      "bad_logo": "That file type isn't supported. Use PNG, SVG, JPG, WebP or ICO."
+    },
+    "abort": {
+      "already_configured": "Brand & Kiosk is already set up. Use Configure to change it.",
+      "single_instance_allowed": "Brand & Kiosk is already set up. Use Configure to change it."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Brand & Kiosk settings",
+        "description": "{kiosk}\n\nPick what to change, then choose **Save** to apply it to every open screen.",
+        "menu_options": {
+          "branding": "Title and colours",
+          "logo": "Logo and icons",
+          "kiosk_user": "Kiosk mode for a user",
+          "sidebar": "Hide sidebar items",
+          "save": "Save"
+        }
+      },
+      "branding": {
+        "title": "Title and colours",
+        "description": "How the title at the top of the sidebar looks.",
+        "data": {
+          "title": "Title",
+          "color": "Title colour",
+          "gradient": "Use a two-colour gradient",
+          "color2": "Second gradient colour",
+          "browser_title": "Use the title in the browser tab too"
+        },
+        "data_description": {
+          "title": "Replaces \"Home Assistant\" at the top of the sidebar.",
+          "gradient": "Blend from the title colour into the second colour.",
+          "browser_title": "Shows your title instead of \"Home Assistant\" in the browser tab and window."
+        }
+      },
+      "logo": {
+        "title": "Logo and icons",
+        "description": "Current logo: {current}",
+        "data": {
+          "logo_upload": "Logo image",
+          "logo_sidebar": "Show the logo next to the sidebar title",
+          "logo_favicon": "Use the logo as the browser tab icon",
+          "logo_app_icon": "Use the logo as the home-screen app icon",
+          "logo_remove": "Remove the current logo"
+        },
+        "data_description": {
+          "logo_upload": "PNG, SVG, JPG, WebP or ICO. A square image of at least 512 × 512 works best.",
+          "logo_app_icon": "Used when Home Assistant is added to a phone or tablet home screen. Re-add the shortcut to see a new icon."
+        }
+      },
+      "kiosk_user": {
+        "title": "Kiosk mode for a user",
+        "description": "Pick the user. Each user can have their own dashboard. Tip: create a separate user for a wall tablet.",
+        "data": {
+          "user_id": "User"
+        }
+      },
+      "kiosk": {
+        "title": "Kiosk mode for {user}",
+        "description": "What {user} sees when they open Home Assistant. On any device, add ?kiosk=off to the address to turn kiosk mode off for that browser tab, or ?kiosk to turn it on.",
+        "data": {
+          "enabled": "Kiosk mode for this user",
+          "dashboard": "Dashboard to show",
+          "view": "View (optional)",
+          "hide_header": "Hide the top bar",
+          "hide_sidebar": "Hide the sidebar",
+          "lock": "Keep this user on that dashboard"
+        },
+        "data_description": {
+          "enabled": "Turn off to remove kiosk mode for this user.",
+          "view": "Path of one view, e.g. \"cameras\". Leave empty for the dashboard's first view.",
+          "lock": "If they open any other page, they are sent back to this dashboard."
+        }
+      },
+      "sidebar": {
+        "title": "Hide sidebar items",
+        "description": "Items to hide from the sidebar. They are only hidden, not locked: the page still opens from its address.",
+        "data": {
+          "hide_items": "Items to hide",
+          "hide_for_admins": "Also hide them for administrators"
+        },
+        "data_description": {
+          "hide_for_admins": "When off, administrators still see every item.",
+          "hide_items": "Pick from the list, or type a page path such as hacs or node-red."
+        }
+      }
+    },
+    "error": {
+      "bad_logo": "That file type isn't supported. Use PNG, SVG, JPG, WebP or ICO."
+    }
+  }
+}

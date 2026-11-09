@@ -1,0 +1,15 @@
+{
+  "domain": "brand_kiosk",
+  "name": "Brand & Kiosk",
+  "after_dependencies": ["lovelace"],
+  "codeowners": ["@sariyamon"],
+  "config_flow": true,
+  "dependencies": ["file_upload", "frontend", "http", "websocket_api"],
+  "documentation": "https://github.com/sariyamon/ha-brand-kiosk",
+  "integration_type": "service",
+  "iot_class": "local_push",
+  "issue_tracker": "https://github.com/sariyamon/ha-brand-kiosk/issues",
+  "requirements": [],
+  "single_config_entry": true,
+  "version": "1.0.0"
+}
